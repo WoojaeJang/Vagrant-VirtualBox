@@ -96,6 +96,8 @@ C:\HashiCorp>vagrant ssh
 [encore@localhost ~]$
 ```
 
+<br/>
+
 ## 파일 확인
 
 #### 디렉토리(directory)에 있는 내용(디렉토리, 파일 등)을 확인
@@ -107,6 +109,8 @@ C:\HashiCorp>vagrant ssh
 ```
 [vagrant@localhost ~]$ ls -al
 ```
+
+<br/>
 
 ## 파일 생성 및 vi 편집기 열기, 권한 수정
 
@@ -221,7 +225,7 @@ Do you accept the license terms? [yes|no]
 [no] >>> yes 엔터
 ```
 
-####설치 과정 중 3
+#### 설치 과정 중 3
 ```
 Miniconda3 will now be installed into this location:
 /home/encore/miniconda3
@@ -255,8 +259,229 @@ by running conda init? [yes|no]
 >>> exit()
 ```
 
-### 리눅스 종료
+### Vagrant 종료
 ```
 (base) [encore@localhost ~]$ sudo shutdown -h now
 ```
+
+<br/>
+
+## Vagrant 네트워크 설정
+
+#### vagrant 네트워크 config 추가
+v.cpu=2와 end 사이에 코드 추가
+```
+config.vm.network 'private_network', ip: "192.168.1.10"
+```
+
+이렇게 생김
+```
+# SHELL
+  config.vm.provider "virtualbox" do |v| 
+	  v.memory = 4096 
+	  v.cpus = 2
+  config.vm.network 'private_network', ip: "192.168.1.10"
+  end
+end
+```
+
+#### vagrant 폴더 위치로 이동
+```
+C:\Users\WOOJAE>cd \
+C:\>cd HashiCorp
+```
+
+#### vagrant 켜기
+```
+C:\HashiCorp>vagrant up
+```
+
+#### vagrant ssh 접속
+```
+C:\HashiCorp>vagrant ssh
+```
+
+<br/>
+
+## nslookup
+
+#### nslookup을 사용하기 위한 bind-utils 설치
+```
+[vagrant@localhost ~]$ sudo yum install bind-utils
+```
+
+#### nslookup 사용
+```
+[vagrant@localhost ~]$ nslookup
+> www.naver.com
+Server:         10.0.2.3
+Address:        10.0.2.3#53
+
+Non-authoritative answer:
+www.naver.com   canonical name = www.naver.com.nheos.com.
+Name:   www.naver.com.nheos.com
+Address: 223.130.195.95
+Name:   www.naver.com.nheos.com
+Address: 223.130.200.104
+> www.nate.com
+Server:         10.0.2.3
+Address:        10.0.2.3#53
+
+Non-authoritative answer:
+Name:   www.nate.com
+Address: 120.50.131.112
+```
+
+<br/>
+
+## ifconfig
+
+#### ifconfig 사용을 위한 net-tools 설치
+```
+[vagrant@localhost ~]$ sudo yum install net-tools
+```
+
+<br/>
+
+## 특정 계정에 jupyter notebook 설치
+
+#### encore 계정으로 이동
+```
+[vagrant@localhost ~]$ su encore
+```
+
+#### home 디렉토리로 이동
+```
+(base) [encore@localhost vagrant]$ cd ~
+```
+
+#### jupyter notebook 설치
+```
+(base) [encore@localhost ~]$ conda install jupyter
+```
+
+<br/>
+
+## jupyter notebook 설정
+
+#### jupyter notebbok 설정파일 생성
+```
+(base) [encore@localhost ~]$ jupyter notebook --generate-config
+```
+
+#### ipython켜기
+```
+(base) [encore@localhost ~]$ ipython
+```
+
+#### passwd 설정
+```
+In [1]: from notebook.auth import passwd
+
+In [2]: passwd()
+
+Out[2]: 'argon2:$argon2id$v=19$m=10240,t=10,p=8$xrNg4NiGqki8FRaFPzC6TA$pZPUKSd+c+9mGI2jeRcQ1psrYqBbLWw/s0unxVFEM/4'
+
+In [3]: exit
+```
+
+#### .jupyter 폴더로 이동
+```
+(base) [encore@localhost ~]$ cd .jupyter
+```
+
+#### jupyter notebbok 설정파일 수정
+```
+(base) [encore@localhost .jupyter]$ vi jupyter_notebook_config.py
+```
+
+명령어 모드에서 줄번호 표시  
+:set number
+
+명령어 모드에서 검색  
+:/password  
+n 눌러서 412라인으로 이동  
+
+```
+# c.NotebookApp.password = ''
+```
+를
+```
+c.NotebookApp.password = 'argon2:$argon2id$v=19$m=10240,t=10,p=8$xrNg4NiGqki8FRaFPzC6TA$pZPUKSd+c+9mGI2jeRcQ1psrYqB     bLWw/s0unxVFEM/4'
+```
+로 변경  
+  
+명령어 모드에서 검색  
+:/allow_origin  
+83 라인으로 이동  
+
+```
+# c.NotebookApp.allow_origin = ''
+```
+를
+```
+c.NotebookApp.allow_origin = '*'
+```
+로 변경  
+
+명령어 모드에서 검색  
+:/open_browser  
+401 라인으로 이동  
+
+```
+# c.NotebookApp.open_browser = True
+```
+를  
+```
+c.NotebookApp.open_browser = False
+```
+로 변경  
+
+명령어 모드에서 저장 후 종료   
+:wq  
+
+<br/>
+
+## jupyter notebook 접속
+
+#### home에 workspace 폴더 생성
+```
+(base) [encore@localhost .jupyter]$ mkdir ~/workspace/
+```
+
+#### workspace 폴더로 이동
+```
+(base) [encore@localhost .jupyter]$ cd ~/workspace/
+```
+
+#### jupyter notebook 실행
+```
+(base) [encore@localhost workspace]$ jupyter notebook --ip=192.168.1.10
+```
+```
+[I 06:49:12.269 NotebookApp] Serving notebooks from local directory: /home/encore/workspace
+[I 06:49:12.270 NotebookApp] Jupyter Notebook 6.4.8 is running at:
+[I 06:49:12.270 NotebookApp] http://192.168.1.10:8888/
+[I 06:49:12.270 NotebookApp] Use Control-C to stop this server and shut down all kernels (twice to skip confirmation).
+```
+인터넷 주소창에   
+http://192.168.1.10:8888/  
+입력 후  
+비밀번호 입력  
+
+<br/>
+
+## jupyter notebook 및 Vagrant 종료
+
+#### jupyter notebook 종료
+터미널에서 ctrl+c로 jupyter notebook 종료
+```
+Shutdown this notebook server (y/[n])? y
+```
+
+#### 리눅스 종료
+```
+(base) [encore@localhost workspace]$ sudo shutdown -h now
+```
+
 
