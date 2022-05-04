@@ -66,6 +66,8 @@ C:\HashiCorp>vagrant ssh
 ```
 
 <br/>
+<hr/>
+<br/>
 
 ## 계정 추가 및 계정 이동
 
@@ -97,6 +99,8 @@ C:\HashiCorp>vagrant ssh
 ```
 
 <br/>
+<hr/>
+<br/>
 
 ## 파일 확인
 
@@ -110,6 +114,8 @@ C:\HashiCorp>vagrant ssh
 [vagrant@localhost ~]$ ls -al
 ```
 
+<br/>
+<hr/>
 <br/>
 
 ## 파일 생성 및 vi 편집기 열기, 권한 수정
@@ -133,6 +139,8 @@ esc -> :wq
 [vagrant@localhost ~]$chmod 777 a.txt
 ```
 
+<br/>
+<hr/>
 <br/>
 
 ## 계정에 권한 부여
@@ -165,6 +173,8 @@ encore  ALL=(ALL)       ALL
 esc -> :wq
 
 <br/>
+<hr/>
+<br/>
 
 ## 권한이 생긴 계정에서 파일 설치
 
@@ -183,6 +193,8 @@ esc -> :wq
 [encore@localhost etc]$ sudo yum update
 ```
 
+<br/>
+<hr/>
 <br/>
 
 ## 미니콘다 설치
