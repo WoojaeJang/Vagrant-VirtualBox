@@ -277,6 +277,8 @@ by running conda init? [yes|no]
 ```
 
 <br/>
+<hr/>
+<br/>
 
 ## Vagrant 네트워크 설정
 
@@ -314,6 +316,8 @@ C:\HashiCorp>vagrant ssh
 ```
 
 <br/>
+<hr/>
+<br/>
 
 ## nslookup
 
@@ -345,6 +349,8 @@ Address: 120.50.131.112
 ```
 
 <br/>
+<hr/>
+<br/>
 
 ## ifconfig
 
@@ -353,6 +359,8 @@ Address: 120.50.131.112
 [vagrant@localhost ~]$ sudo yum install net-tools
 ```
 
+<br/>
+<hr/>
 <br/>
 
 ## 특정 계정에 jupyter notebook 설치
@@ -372,6 +380,8 @@ Address: 120.50.131.112
 (base) [encore@localhost ~]$ conda install jupyter
 ```
 
+<br/>
+<hr/>
 <br/>
 
 ## jupyter notebook 설정
@@ -453,6 +463,8 @@ c.NotebookApp.open_browser = False
 :wq  
 
 <br/>
+<hr/>
+<br/>
 
 ## jupyter notebook 접속
 
@@ -482,6 +494,8 @@ http://192.168.1.10:8888/
 비밀번호 입력  
 
 <br/>
+<hr/>
+<br/>
 
 ## jupyter notebook 및 Vagrant 종료
 
@@ -491,9 +505,11 @@ http://192.168.1.10:8888/
 Shutdown this notebook server (y/[n])? y
 ```
 
-#### 리눅스 종료
+#### Vagrant 종료
 ```
 (base) [encore@localhost workspace]$ sudo shutdown -h now
 ```
 
-
+<br/>
+<hr/>
+<br/>
