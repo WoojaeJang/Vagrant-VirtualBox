@@ -1,0 +1,48 @@
+<VirtualBox 설치>
+https://www.virtualbox.org/ 
+다운 및 설치
+
+
+<vagrant 설치>
+https://www.vagrantup.com/downloads
+다운 및 설치
+
+----------------------------------------------------------
+
+<vagrant 초기 파일 생성>
+터미널 실행
+C:\Users\WOOJAE>cd \
+C:\HashiCorp>vagrant init
+
+
+<vagrant 설정 변경 (centos 설치를 위해)>
+C:\HashiCorp에 위치하는 Vagrantfile 파일에서
+15번째줄
+config.vm.box = "base" 
+를
+config.vm.box = "centos/7"
+로 변경
+
+마지막줄 #SHELL과 end 사이에 코드 추가
+
+  config.vm.provider "virtualbox" do |v| 
+	  v.memory = 4096 
+	  v.cpus = 2
+  end
+
+이렇게 생김
+# SHELL
+  config.vm.provider "virtualbox" do |v| 
+	  v.memory = 4096 
+	  v.cpus = 2
+  end
+end
+
+
+<vagrant provisioning 진행>
+C:\HashiCorp>vagrant up
+centcos가 자동으로 설치 됨
+
+
+<vagrant 가상머신 ssh로 접속>
+C:\HashiCorp>vagrant ssh
