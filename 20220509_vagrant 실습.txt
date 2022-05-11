@@ -1,0 +1,255 @@
+# Vagrant 실습
+
+## 실습을 위한 config 변경
+
+#### 리눅스 내부에서 네트워크 사용을 위해 Vagrantfile 변경
+vagrant init을 한 폴더에 Vagrantfile 존재  
+[Vagrantfile](./Vagrantfile)
+위 파일 다운로드 후 덮어쓰기
+
+#### 터미널 실행
+vagrant init을 한 폴더를 마우스 오른쪽 클릭한 후  
+'터미널에서 열기' 클릭  
+Windows PowerShell이 실행됨
+
+#### vagrant 실행
+```
+PS C:\HashiCorp> vagrant up
+```
+
+#### vagrant ssh 열기
+```
+PS C:\HashiCorp> vagrant ssh
+```
+
+---------------------------------------------------------------------------
+
+## 정보 확인
+
+#### cpu 정보 확인
+```
+[vagrant@localhost ~]$ cat /proc/cpuinfo
+```
+
+#### 메모리 용량 확인
+```
+[vagrant@localhost ~]$ free
+```
+#### 메모리 용량 확인 (G, M, B 등으로 가독성 있게)
+```
+[vagrant@localhost ~]$ free -h
+```
+
+#### redhat 버전 확인(운영체제 버전 확인)
+```
+[vagrant@localhost ~]$ cat  /etc/redhat-release
+```
+
+#### 전원 종료
+```
+[vagrant@localhost ~]$ sudo shutdown -h now
+```
+
+----------------------------------------------
+
+## 네트워크 설정
+
+#### 설정에서 네트워크 설정하기
+```
+1. VirtualBox에서 가상시스템 선택
+2. 설정 > 네트워크 > 어뎁터 2
+	네트워크 어댑터 사용하기 : 활성화
+	다음에서 연결됨 : 호스트 전용 어댑터
+	이름 : VirtualBox Host-Only Ethernet Adapter
+	확인 버튼 클릭
+3. 가상시스템 시작
+
+#### vagrant ssh 열기
+```
+PS C:\HashiCorp> vagrant ssh
+```
+
+#### net-tools 설치
+ifconfig 사용을 위해 net-tools 설치
+```
+[vagrant@localhost ~]$ sudo yum install net-tools
+```
+
+#### ifconfig
+ifconfig는 리눅스의 네트워크 관리를 위한 인터페이스 구성 유틸리티이다
+```
+[vagrant@localhost ~]$ ifconfig
+```
+이때 'eth1' 이 존재해야 한다!!
+
+#### 위치 이동
+네트워크 설정 파일이 존재하는 위치로 이동
+```
+[vagrant@localhost ~]$ cd /etc/sysconfig/network-scripts/
+```
+
+#### ifcfg 단어가 포함된 파일만 확인
+```
+[vagrant@localhost network-scripts]$ ls -al | grep ifcfg
+```
+#### 파일 복사
+ifcfg-eth1 파일이 없으므로 ifcfg-eth0을 복사해서 파일 생성
+```
+[vagrant@localhost network-scripts]$ sudo cp ./ifcfg-eth0 ./ifcfg-eth1
+```
+
+#### 파일 수정
+ifcfg-eth1 파일 수정
+```
+[vagrant@localhost network-scripts]$ sudo vi ifcfg-eth1
+```
+
+기존에 다음과 같이 복사되어 있는 파일을
+```
+DEVICE="eth0"
+BOOTPROTO="dhcp"
+ONBOOT="yes"
+TYPE="Ethernet"
+PERSISTENT_DHCLIENT="yes"
+```
+
+서버는 IP를 고정으로 해야하기 때문에 다음과 같이 변경한다  
+i를 눌러 편집 시작
+```
+DEVICE="eth1"
+BOOTPROTO=none
+IPADDR=192.168.56.10
+NETMASK=255.255.255.0
+GATEWAY=192.168.56.1
+DNS1=192.168.56.1
+ONBOOT="yes"
+TYPE="Ethernet"
+PERSISTENT_DHCLIENT="yes"
+```
+esc -> :wq 눌러서   
+저장 후 편집기 빠져나오기
+
+
+
+간단설명
+```
+DEVICE="eth1" : 장비명
+BOOTPROTO=none : 기존의 dhcp(동적) -> none(고정)
+IPADDR=192.168.56.10 : IP 부여
+NETMASK=255.255.255.0 : 서브넷 마스크 (같은망에 있기 위해)
+GATEWAY=192.168.56.1 : 나가는 통로
+DNS1=192.168.56.1
+ONBOOT="yes" : 자동 부팅
+TYPE="Ethernet"
+PERSISTENT_DHCLIENT="yes"
+```
+
+네트워크 서비스 재시작
+```
+[vagrant@localhost network-scripts]$ sudo systemctl restart network
+```
+
+이때
+```
+Job for network.service failed because the control process exited with error code. See "systemctl status network.service" and "journalctl -xe" for details.
+```
+와 같은 에러가 발생한다면 둘 중 하나이며 해결방법은 다음과 같다
+
+- ifcfg-eth1 파일에 오타
+	1. 오타를 수정
+	2. 네트워크 서비스 재시작
+
+- ifcfg-eth1 파일 외에 다른 파일 존재 (ifcfg-eth2, ifcfg-eth3, ifcfg-eth4)
+	1. 파일을 삭제 
+	2. 네트워크 서비스를 재시작
+	3. ifcfg-eth1 파일 다시 확인 후 저장
+	4. 네트워크 서비스를 재시작
+```
+[vagrant@localhost network-scripts]$ sudo rm ifcfg-eth2
+[vagrant@localhost network-scripts]$ sudo rm ifcfg-eth3
+[vagrant@localhost network-scripts]$ sudo rm ifcfg-eth4
+[vagrant@localhost network-scripts]$ sudo systemctl restart network
+[vagrant@localhost network-scripts]$ sudo vi ifcfg-eth1
+:wq
+[vagrant@localhost network-scripts]$ sudo systemctl restart network
+```
+
+#### 네트워크 서비스 상태 확인
+```
+[vagrant@localhost network-scripts]$ sudo systemctl status network
+```
+
+#### 네트워크 재 확인
+```
+[vagrant@localhost network-scripts]$ ifconfig
+```
+
+이때 eth1의 IP가 설정한 값으로 잘 나와 있으면 성공
+```
+inet 192.168.56.10
+```
+
+#### Windows와 통신 확인
+새로운 터미널(cmd창)을 연 후 ping으로 해당 ip 확인
+```
+C:\Users\WOOJAE>ping 192.168.56.10
+```
+```
+Ping 192.168.56.10 32바이트 데이터 사용:
+192.168.56.10의 응답: 바이트=32 시간<1ms TTL=64
+192.168.56.10의 응답: 바이트=32 시간<1ms TTL=64
+192.168.56.10의 응답: 바이트=32 시간<1ms TTL=64
+192.168.56.10의 응답: 바이트=32 시간<1ms TTL=64
+
+192.168.56.10에 대한 Ping 통계:
+    패킷: 보냄 = 4, 받음 = 4, 손실 = 0 (0% 손실),
+왕복 시간(밀리초):
+    최소 = 0ms, 최대 = 0ms, 평균 = 0ms
+```
+
+-----------------------------------------------------------
+
+## 명령어 기록
+
+#### 현재까지 입력한 명령어 확인
+```
+[vagrant@localhost network-scripts]$ history
+```
+
+#### n번째 입력한 명령어 다시 사용
+!n
+ex) 15번째 명령어 재사용 
+```
+[vagrant@localhost network-scripts]$ !15
+```
+
+---------------------------------------------------
+
+## MariaDB 설치
+
+#### 설치
+```
+[vagrant@localhost network-scripts]$ sudo yum install mariadb-server -y
+```
+
+#### 시작
+```
+[vagrant@localhost network-scripts]$ sudo systemctl start mariadb
+```
+
+#### 상태 확인
+```
+[vagrant@localhost network-scripts]$ sudo systemctl status mariadb
+```
+
+#### 재부팅시에도 자동 실행 설정
+```
+[vagrant@localhost network-scripts]$ sudo systemctl enable mariadb
+```
+
+#### vagrant 종료
+```
+[vagrant@localhost network-scripts]$ sudo shutdown -h now
+```
+
+
